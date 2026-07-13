@@ -14,8 +14,7 @@
 // Feature space: 22 spectral and temporal features
 //
 // Authors: [Brayan Soto Quispe, Fernando Alarcon Yllaconse,
-//           Ulises Francisco Giraldo Malca]
-// Institution: Universidad Peruana de Ciencias Aplicadas (UPC)
+//           Ulises Francisco Giraldo Malca, Pablito Marcelo López Serrano]
 // GEE Project: ee-brayansotoquispe
 // Last updated: 2024
 
