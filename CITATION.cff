@@ -1,0 +1,41 @@
+cff-version: 1.2.0
+
+title: "Mangrove Mapping Using Random Forest and U-Net"
+
+message: >
+  If you use this repository in your research, please cite both the
+  associated publication and this software repository.
+
+type: software
+
+authors:
+  - family-names: "Soto Quispe"
+    given-names: "Brayan"
+
+version: "1.0.0"
+
+date-released: "2026-07-10"
+
+license: "MIT"
+
+abstract: >
+  Google Earth Engine scripts and Python notebooks for mangrove forest
+  mapping using Random Forest classification and U-Net deep learning.
+  The repository includes multi-sensor Landsat (5, 7, and 8/9)
+  preprocessing, training data, model weights, and inference workflows
+  for long-term mangrove and aquaculture monitoring.
+
+repository-code: "https://github.com/YOUR_GITHUB_USERNAME/Mangrove-RandomForest-UNet"
+
+url: "https://github.com/YOUR_GITHUB_USERNAME/Mangrove-RandomForest-UNet"
+
+keywords:
+  - Mangrove
+  - Aquaculture
+  - Google Earth Engine
+  - Random Forest
+  - U-Net
+  - Landsat
+  - Deep Learning
+  - Remote Sensing
+  - Time Series
