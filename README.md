@@ -2,10 +2,6 @@
 
 This repository contains the complete workflow developed for mangrove ecosystem mapping in the Tumbes region (Peru) using Landsat imagery, Google Earth Engine (GEE), Random Forest classification, and U-Net deep learning.
 
-The repository accompanies the manuscript:
-
-> **[Title of the manuscript]**
-
 ---
 
 # Repository structure
