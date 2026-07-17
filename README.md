@@ -1,6 +1,6 @@
 # Mangrove Mapping using Random Forest and U-Net
 
-This repository contains the complete workflow developed for mangrove ecosystem mapping in the Tumbes region (Peru) using Landsat imagery, Google Earth Engine (GEE), Random Forest classification, and U-Net deep learning.
+This repository contains the complete workflow developed for mangrove ecosystem mapping in the Tumbes region (Peru) using Landsat imagery, Google Earth Engine (GEE), Random Forest classification, and U-Net deep learning in Google Colab.
 
 ---
 
