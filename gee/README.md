@@ -35,7 +35,7 @@ gee/
 
 Each Landsat folder contains:
 
-- **RF_Landsat5.js**, **RF_Landsat7.js**, or **RF_Landsat8_9.js**: Google Earth Engine scripts implementing the Random Forest classification workflow.
+- **classification.js**: Google Earth Engine scripts implementing the Random Forest classification workflow.
 - **training_polygons_points.geojson**: Training polygons and points manually digitized for the corresponding Landsat temporal period.
 
 The **asset_data** folder contains the geographic boundaries required by all scripts:
