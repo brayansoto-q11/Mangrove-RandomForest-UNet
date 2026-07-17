@@ -119,7 +119,7 @@ with your own Google Earth Engine project ID.
 
 1. Upload all files from **asset_data** as GEE Assets.
 2. Upload the corresponding `training_polygons_points.geojson`.
-3. In **SECTION 10** of the script:
+3. In **SECTION 10** for Landsat 5 and 7 and **SECTION 9** for Landsat 8/9 of the script:
    - Uncomment the asset-loading block.
    - Comment out the original digitized imports.
 4. Update all Asset paths.
