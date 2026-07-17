@@ -21,14 +21,12 @@ Mangrove-RandomForest-UNet/
 │   └── Landsat8-9/
 │
 ├── unet/
-│   ├── README.md
-│   ├── UNet_training.ipynb
-│   ├── requirements.txt
-│   ├── training_data/
-│   ├── model_weights/
-│   └── temporal_models/
-│
-└── docs/
+    ├── README.md
+    ├── UNet_training.ipynb
+    ├── requirements.txt
+    ├── training_data/
+    ├── model_weights/
+    └── temporal_models/
 ```
 
 ---
@@ -64,8 +62,8 @@ The second stage uses the Random Forest classifications as reference labels to t
 
 The U-Net workflow includes:
 
-- Dataset preparation
-- Model training
+- Model weight
+- Trainign data
 - Model evaluation
 - Export of trained weights
 - Temporal prediction using the trained model
