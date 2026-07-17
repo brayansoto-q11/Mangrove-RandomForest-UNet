@@ -6,7 +6,7 @@
 //   Generates annual multi-band image stacks used as input for
 //   the U-Net deep learning model for aquaculture pond detection.
 //   This script was used to produce stacks for both model training
-//   (reference year) and annual inference (1993–2024 time series).
+//   (reference year) and annual inference (1993/1995–2024 time series).
 //
 // Supported sensors (auto-selected by year):
 //   Landsat 5 TM   → 1993/1995–1999
@@ -18,8 +18,8 @@
 //         6 temporal metrics) at 30 m resolution, UTM Zone 17S
 //
 // Authors: [Brayan Soto Quispe, Fernando Alarcon Yllaconse,
-//           Ulises Francisco Giraldo Malca]
-// Institution: Universidad Peruana de Ciencias Aplicadas (UPC)
+//           Ulises Francisco Giraldo Malca, Pablito Marcelo López Serrano]
+
 // GEE Project: ee-brayansotoquispe
 // Last updated: 2024
 //
@@ -42,7 +42,7 @@
 // ── Option B: Extended temporal window ──────────────────────
 //    Set MESES_EXTRA > 0 to include scenes from months beyond
 //    December of the target year. Recommended for years with
-//    persistent cloud cover (ENSO years: 1993, 1997–1998).
+//    persistent cloud cover.
 //    MESES_EXTRA = 12 extends the window by one full year.
 //
 //    Example — 18-month window starting January 1996:
