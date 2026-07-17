@@ -56,11 +56,6 @@ They should not be considered a universal training dataset.
 
 For years with substantial land cover changes, unusual climatic conditions, or major disturbances, the training samples should be reviewed and updated before classification.
 
-Particularly important periods include strong ENSO events:
-
-- 1997–1998
-- 2016–2017
-
 Users can:
 
 1. Add new polygons directly in the GEE Code Editor.
@@ -75,7 +70,7 @@ Users can:
 |------|-----------------|--------|----------------|
 | Landsat5/training_polygons_points_E1_L5.geojson | Epoch 1 | Landsat 5 TM | 1993/1995–1999 |
 | Landsat7/training_polygons_points_E2_L7.geojson | Epoch 2 | Landsat 7 ETM+ | 2000–2012 |
-| Landsat8-9/training_polygons_points_E2_L89.geojson | Epoch 3 | Landsat 8/9 OLI | 2013–2024 |
+| Landsat8-9/training_polygons_points_E3_L89.geojson | Epoch 3 | Landsat 8/9 OLI | 2013–2024 |
 
 ---
 
@@ -85,7 +80,7 @@ The classification periods were defined according to Landsat data availability:
 
 | Sensor | Period | Processing strategy |
 |--------|--------|--------------------|
-| Landsat 5 TM | 1993–1999 | Annual or multi-year median composites depending on image availability. Multi-year composites may be required for years with limited cloud-free observations. |
+| Landsat 5 TM | 1993/1995–1999 | Annual or multi-year median composites depending on image availability. Multi-year composites may be required for years with limited cloud-free observations. |
 | Landsat 7 ETM+ | 2000–2012 | Annual median composites. Landsat 7 SLC-off effects were considered after 2003. |
 | Landsat 8/9 OLI | 2013–2024 | Annual median composites combining Landsat 8 and Landsat 9 imagery. |
 
