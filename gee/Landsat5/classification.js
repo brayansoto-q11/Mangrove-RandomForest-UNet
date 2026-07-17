@@ -65,8 +65,7 @@
 //    need to equal YEAR_START — set it to the ecological year
 //    of interest (e.g. the central year of the window).
 //    Use this when the target year has few usable scenes due to
-//    persistent cloud cover or ENSO events (e.g. 1983, 1993,
-//    1997–1998). A ±1 year window (3 years total) is recommended
+//    persistent cloud cover. A ±1 year window (3 years total) is recommended
 //    as a first attempt; expand to ±2 years only if needed.
 //
 //    Example — 3-year window centered on 1993:
