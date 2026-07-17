@@ -81,7 +81,7 @@
 //
 // RULE OF THUMB:
 //   Check col.size() in the GEE Console after running.
-//   < 3 scenes  → widen the window or raise CLOUD_COVER to 70%
+//   < 3 scenes  → widen the window or raise CLOUD_COVER to 80%
 //   3–5 scenes  → acceptable; multi-year composite recommended
 //   ≥ 5 scenes  → single-year composite is reliable
 // ============================================================
@@ -139,7 +139,7 @@ function preprocessL5(img) {
 // dry season (May–Dec, better image quality). Temporal metrics
 // in Section 7 capture this intra-annual seasonality.
 // If fewer than 3 scenes are available, consider raising the
-// cloud cover threshold to 70% or using an adjacent year.
+// cloud cover threshold to 80% or using an adjacent year.
 // ============================================================
 
 var startDate = ee.Date.fromYMD(YEAR_START, 1, 1);
@@ -203,8 +203,7 @@ function harmonizeTMtoOLI(img) {
   ]).copyProperties(img, img.propertyNames());
 }
 
-// BUG FIX: original script referenced undefined 'compositeCompleto'
-// in the false branch — corrected to use 'composite' in both cases
+// Composite
 var compositeBase = ee.Image(
   HARMONIZE_TO_OLI
     ? harmonizeTMtoOLI(composite)
