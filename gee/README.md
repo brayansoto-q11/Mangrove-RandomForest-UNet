@@ -17,15 +17,15 @@ gee/
 │   └── Zona_Amortiguamiento.geojson
 │
 ├── Landsat5/
-│   ├── RF_Landsat5.js
+│   ├── classification.js
 │   └── training_polygons_points.geojson
 │
 ├── Landsat7/
-│   ├── RF_Landsat7.js
+│   ├── classification.js
 │   └── training_polygons_points.geojson
 │
 └── Landsat8-9/
-    ├── RF_Landsat8_9.js
+    ├── classification.js
     └── training_polygons_points.geojson
 ```
 
