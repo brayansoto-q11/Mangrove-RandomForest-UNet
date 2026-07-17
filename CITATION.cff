@@ -25,9 +25,9 @@ abstract: >
   preprocessing, training data, model weights, and inference workflows
   for long-term mangrove and aquaculture monitoring.
 
-repository-code: "https://github.com/YOUR_GITHUB_USERNAME/Mangrove-RandomForest-UNet"
+repository-code: "https://github.com/brayansoto-q11/Mangrove-RandomForest-UNet"
 
-url: "https://github.com/YOUR_GITHUB_USERNAME/Mangrove-RandomForest-UNet"
+url: "https://github.com/brayansoto-q11/Mangrove-RandomForest-UNet"
 
 keywords:
   - Mangrove
