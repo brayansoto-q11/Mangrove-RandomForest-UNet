@@ -9,10 +9,11 @@
 //   (reference year) and annual inference (1993/1995–2024 time series).
 //
 // Supported sensors (auto-selected by year):
-//   Landsat 5 TM   → 1993/1995–1999
-//   Landsat 7 ETM+ → 2000–2012  (SLC-off gap-filling via median composite)
-//   Landsat 8 OLI  → 2013–2021
-//   Landsat 9 OLI-2→ 2022–2024  (merged with L8 from 2022 onward)
+//   Landsat 5 TM   → 1993/1995–1999   [HARMONIZED to OLI, Roy et al. 2016]
+//   Landsat 7 ETM+ → 2000–2012        [HARMONIZED to OLI, Roy et al. 2016]
+//                    (SLC-off gap-filling via median composite)
+//   Landsat 8 OLI  → 2013–2021        [native, no harmonization needed]
+//   Landsat 9 OLI-2→ 2022–2024        [native, merged with L8 from 2022]
 //
 // Output: 23-band GeoTIFF stack (6 spectral + 11 static indices +
 //         6 temporal metrics) at 30 m resolution, UTM Zone 17S
@@ -88,31 +89,39 @@ Map.centerObject(studyArea, 10);
 // TCW references for Surface Reflectance (SR):
 //   L5/L7: Crist (1985), RSE 17:301-306 (Reflectance factor native)
 //   L8/L9: Zhai et al. (2022), RSE 274:112992 (Derived for C2 L2 SR - 6-band model)
+//
+// harmonize — whether this sensor's SR reflectance must be converted
+//             to OLI-equivalent reflectance before computing indices
+//             (true for L5/L7, false for L8/L9 which are already OLI).
 // ============================================================
 var sensorConfig = {
   L5: {
     collection: 'LANDSAT/LT05/C02/T1_L2',
     bands:     ['SR_B1', 'SR_B2', 'SR_B3', 'SR_B4', 'SR_B5', 'SR_B7'],
     names:     ['Blue',  'Green', 'Red',   'NIR',   'SWIR1', 'SWIR2'],
-    tcwCoefs:  [0.0315,  0.2021,  0.3102,  0.1594,  -0.6806, -0.6109]
+    tcwCoefs:  [0.0315,  0.2021,  0.3102,  0.1594,  -0.6806, -0.6109],
+    harmonize: true
   },
   L7: {
     collection: 'LANDSAT/LE07/C02/T1_L2',
     bands:     ['SR_B1', 'SR_B2', 'SR_B3', 'SR_B4', 'SR_B5', 'SR_B7'],
     names:     ['Blue',  'Green', 'Red',   'NIR',   'SWIR1', 'SWIR2'],
-    tcwCoefs:  [0.0315,  0.2021,  0.3102,  0.1594,  -0.6806, -0.6109]
+    tcwCoefs:  [0.0315,  0.2021,  0.3102,  0.1594,  -0.6806, -0.6109],
+    harmonize: true
   },
   L8: {
     collection: 'LANDSAT/LC08/C02/T1_L2',
     bands:     ['SR_B2', 'SR_B3', 'SR_B4', 'SR_B5', 'SR_B6', 'SR_B7'],
     names:     ['Blue',  'Green', 'Red',   'NIR',   'SWIR1', 'SWIR2'],
-    tcwCoefs:  [0.0382,  0.2137,  0.3536,  0.2270,  -0.6108, -0.6351]
+    tcwCoefs:  [0.0382,  0.2137,  0.3536,  0.2270,  -0.6108, -0.6351],
+    harmonize: false
   },
   L9: {
     collection: 'LANDSAT/LC09/C02/T1_L2',
     bands:     ['SR_B2', 'SR_B3', 'SR_B4', 'SR_B5', 'SR_B6', 'SR_B7'],
     names:     ['Blue',  'Green', 'Red',   'NIR',   'SWIR1', 'SWIR2'],
-    tcwCoefs:  [0.0382,  0.2137,  0.3536,  0.2270,  -0.6108, -0.6351]
+    tcwCoefs:  [0.0382,  0.2137,  0.3536,  0.2270,  -0.6108, -0.6351],
+    harmonize: false
   }
 };
 
@@ -125,7 +134,53 @@ else                   { sensor = 'L5'; }
 
 var cfg = sensorConfig[sensor];
 print('Active sensor:', sensor);
+print('Spectral harmonization to OLI (Roy et al. 2016) applied:', cfg.harmonize);
 
+
+// ============================================================
+// SECTION 2B: SPECTRAL HARMONIZATION — Roy et al. (2016)
+//
+// Reference:
+//   Roy, D.P., Kovalskyy, V., Zhang, H.K., Vermote, E.F., Yan, L.,
+//   Kumar, S.S., Egorov, A. (2016). Characterization of Landsat-7
+//   to Landsat-8 reflective wavelength and normalized difference
+//   vegetation index continuity. Remote Sensing of Environment,
+//   185, 57-70.
+//
+// OLS (Ordinary Least Squares) transformation coefficients,
+// Table 2 of Roy et al. (2016), form:
+//
+//     OLI_band = slope * ETM+_band + intercept
+//
+// These coefficients transform ETM+ (and, by extension, the
+// spectrally near-identical TM/L5) surface reflectance into
+// OLI-equivalent reflectance, so that L5/L7-derived reflectance
+// and indices are radiometrically consistent with the native
+// L8/L9 OLI/OLI-2 composites used from 2013 onward. This is the
+// standard practice for building continuous, sensor-harmonized
+// Landsat time series (e.g. Roy et al. 2016; USGS/CCDC workflows).
+//
+// Coefficients below (slope, intercept), in the order
+// [Blue, Green, Red, NIR, SWIR1, SWIR2]:
+// ============================================================
+var roySlope     = [0.8474, 0.8483, 0.9047, 0.8462, 0.8937, 0.9071];
+var royIntercept = [0.0003, 0.0088, 0.0061, 0.0412, 0.0254, 0.0172];
+var harmonizeBandNames = ['Blue', 'Green', 'Red', 'NIR', 'SWIR1', 'SWIR2'];
+
+// Applies OLI harmonization to an image already renamed to the
+// standardized band names (Blue, Green, Red, NIR, SWIR1, SWIR2).
+// Only used for L5/L7 (cfg.harmonize === true); L8/L9 pass through.
+function harmonizeToOLI(img) {
+  var harmonizedBands = harmonizeBandNames.map(function(name, i) {
+    return img.select(name)
+      .multiply(roySlope[i])
+      .add(royIntercept[i])
+      .rename(name);
+  });
+  return ee.Image(harmonizedBands.reduce(function(acc, b) {
+    return ee.Image(acc).addBands(b);
+  })).copyProperties(img, ['system:time_start', 'system:index']);
+}
 
 // ============================================================
 // SECTION 3: TEMPORAL WINDOW
@@ -136,9 +191,8 @@ var endDate   = startDate.advance(12 + MESES_EXTRA, 'month');
 print('Composite window:', startDate.format('YYYY-MM-dd'),
       '→', endDate.format('YYYY-MM-dd'));
 
-
 // ============================================================
-// SECTION 4: PREPROCESSING — CLOUD MASKING AND SCALING
+// SECTION 4: PREPROCESSING — CLOUD MASKING, SCALING, HARMONIZATION
 //
 // QA_PIXEL bits used (identical across all C2 L2 sensors):
 //   Bit 3 → cloud shadow
@@ -150,6 +204,12 @@ print('Composite window:', startDate.format('YYYY-MM-dd'),
 // across multiple acquisition dates.
 //
 // Scale factors (USGS Collection 2): × 0.0000275, offset −0.2
+//
+// Processing order per scene:
+//   1. Cloud/shadow/snow mask (maskClouds)
+//   2. Scale to reflectance + rename to standard bands (applyScale)
+//   3. If sensor is L5/L7: harmonize to OLI-equivalent reflectance
+//      (harmonizeToOLI), using Roy et al. (2016) coefficients
 // ============================================================
 function maskClouds(img) {
   var qa = img.select('QA_PIXEL');
@@ -176,13 +236,18 @@ function applyScale(img) {
 }
 
 function preprocessImg(img) {
-  return applyScale(maskClouds(img));
+  var scaled = applyScale(maskClouds(img));
+  if (cfg.harmonize) {
+    scaled = harmonizeToOLI(scaled);
+  }
+  return scaled;
 }
-
 
 // ============================================================
 // SECTION 5: IMAGE COLLECTION
-// For 2022+, Landsat 8 and 9 are merged into a single collection
+// For 2022+, Landsat 8 and 9 are merged into a single collection.
+// Note: L8/L9 never pass through harmonizeToOLI (cfg.harmonize
+// is false for both), since they are already native OLI/OLI-2.
 // ============================================================
 var filters = ee.Filter.and(
   ee.Filter.date(startDate, endDate),
@@ -222,9 +287,10 @@ var SWIR2 = composite.select('SWIR2');
 // SECTION 7: STATIC SPECTRAL INDICES (11 indices)
 //
 // Standardized band names (Blue, Green, Red, NIR, SWIR1, SWIR2)
-// allow identical index formulas across all four sensors.
-//
-
+// allow identical index formulas across all four sensors. Because
+// L5/L7 reflectance has already been harmonized to OLI-equivalent
+// values (Section 2B), these indices are computed on a radiometrically
+// consistent basis across the full 1993/1995–2024 time series.
 // ============================================================
 var NDVI  = NIR.subtract(Red).divide(NIR.add(Red)).rename('NDVI');
 var NDWI  = Green.subtract(NIR).divide(Green.add(NIR)).rename('NDWI');
@@ -261,7 +327,11 @@ var RATIO_GN = Green.divide(NIR.add(1e-6)).rename('RATIO_GN');
 // ============================================================
 // SECTION 8: TEMPORAL METRICS (6 features)
 //
-// Computed from individual scenes before compositing.
+// Computed from individual scenes before compositing. Since each
+// scene has already passed through preprocessImg (mask → scale →
+// harmonize), these metrics are also computed on OLI-harmonized
+// reflectance for L5/L7 years.
+//
 // Capture intra-annual variability driven by tidal cycles,
 // seasonal flooding, and ENSO precipitation anomalies.
 //
@@ -312,7 +382,7 @@ var FREQ_AGUA = colIdx.select('MNDWI')
 
 
 // ============================================================
-// SECTION 9: FINAL FEATURE STACK (23 bands)
+// SECTION 9: FINAL FEATURE STACK
 //
 // Composition:
 //   6  spectral bands  (Blue, Green, Red, NIR, SWIR1, SWIR2)
@@ -323,6 +393,9 @@ var FREQ_AGUA = colIdx.select('MNDWI')
 //
 // This stack is the direct input to the U-Net model.
 // Training stacks and inference stacks use identical band order.
+// For L5/L7 years, all bands derive from OLI-harmonized reflectance
+// (Roy et al. 2016), ensuring the model sees a radiometrically
+// consistent input distribution across the whole time series.
 // ============================================================
 var unetStack = composite
   .select(['Blue', 'Green', 'Red', 'NIR', 'SWIR1', 'SWIR2'])
@@ -344,22 +417,23 @@ Map.addLayer(
   composite,
   {bands: ['Red', 'Green', 'Blue'], min: 0.0, max: 0.15, gamma: 1.4},
   sensor + ' ' + YEAR + ' — True color (window: +' + MESES_EXTRA + ' months)'
+    + (cfg.harmonize ? ' [OLI-harmonized]' : '')
 );
-
 
 // ============================================================
 // SECTION 11: EXPORT — U-NET INPUT STACK (GeoTIFF)
 //
 // Output naming convention:
-//   stack_unet_tumbes_{YEAR}_{SENSOR}_ext{WINDOW}m
-//   e.g. stack_unet_tumbes_1996_L5_ext12m
+//   stack_unet_tumbes_{YEAR}_{SENSOR}_ext{WINDOW}m[_OLIharm]
+//   e.g. stack_unet_tumbes_1996_L5_ext12m_OLIharm
 //
 // Projection: UTM Zone 17S (EPSG:32717)
 // Resolution: 30 m
 // Folder:     Unet_Acuicultura_Datos (Google Drive)
 // ============================================================
 var exportName = 'stack_unet_tumbes_' + YEAR + '_' + sensor
-                 + '_ext' + MESES_EXTRA + 'm';
+                 + '_ext' + MESES_EXTRA + 'm'
+                 + (cfg.harmonize ? '_OLIharm' : '');
 
 Export.image.toDrive({
   image:       unetStack.toFloat(),
