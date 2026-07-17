@@ -128,7 +128,7 @@ in Google Earth Engine.
 Run
 
 ```
-UNet_Aquaculture_Tumbes_RSASE.ipynb
+UNet_Aquaculture_Tumbes.ipynb
 ```
 
 to train the model.
