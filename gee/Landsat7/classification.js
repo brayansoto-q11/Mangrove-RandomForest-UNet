@@ -1,5 +1,5 @@
 // ============================================================
-// Supervised Land Cover Classification · Epoch 1 · 2000–2012
+// Supervised Land Cover Classification · Epoch 2 · 2000–2012
 // Tumbes Mangrove System, Northwestern Peru
 // Sensor: Landsat 7 ETM+ (USGS Collection 2 SR)
 //
@@ -30,8 +30,8 @@
 // Gaps are widest at scene edges and nearly absent at nadir.
 //
 // Periods:
-//   Epoch 1A (SLC-on):  1999–2002  → no gap problem
-//   Epoch 1B (SLC-off): 2003–2013  → gap-filling required
+//   Epoch 2A (SLC-on):  1999–2002  → no gap problem
+//   Epoch 2B (SLC-off): 2003–2013  → gap-filling required
 //
 // Gap-filling strategy implemented here:
 //   Primary:  Annual median composite — valid pixels from
@@ -200,7 +200,7 @@ var compositeFilled = composite.unmask(compositeFallback).clip(studyArea);
 //   SWIR2 (B7): slope = 0.9071, intercept = 0.0172
 //
 // Harmonization is applied here to ensure spectral consistency
-// when comparing Epoch 1 (L7) maps against Epoch 3 (L8/9) maps.
+// when comparing Epoch 2 (L7) maps against Epoch 3 (L8/9) maps.
 // For single-sensor, single-epoch classifications it is optional.
 // ============================================================
 var HARMONIZE_TO_OLI = true;
@@ -669,7 +669,7 @@ Export.table.toDrive({
   collection: ee.FeatureCollection([
     ee.Feature(null, {
       Year:         YEAR,
-      Epoch:        1,
+      Epoch:        2,
       Sensor:       'L7_ETM+',
       N_Classes:    5,
       Split_Method: 'Polygon_70-30',
@@ -698,7 +698,7 @@ var perClassAccuracy = ee.FeatureCollection(
     );
     return ee.Feature(null, {
       Year:   YEAR,
-      Epoch:  1,
+      Epoch:  2,
       Sensor: 'L7_ETM+',
       TC:     tc,
       Class:  CLASS_NAMES.get(tc.format()),
@@ -723,7 +723,7 @@ var confMatrixTable = ee.FeatureCollection(
     var rowRaw = ee.List(matrixArray.get(tcNum));
     return ee.Feature(null, {
       Year:           YEAR,
-      Epoch:          1,
+      Epoch:          2,
       Sensor:         'L7_ETM+',
       TC:             tcNum,
       Actual_Class:   CLASS_NAMES.get(tcNum.format()),
@@ -764,7 +764,7 @@ function areaByZone(image, zone, zoneName) {
     var num = ee.Number(item.get('class')).toInt().format();
     return ee.Feature(null, {
       Year:    YEAR,
-      Epoch:   1,
+      Epoch:   2,
       Sensor:  'L7_ETM+',
       Zone:    zoneName,
       Class:   CLASS_NAMES.get(num),
