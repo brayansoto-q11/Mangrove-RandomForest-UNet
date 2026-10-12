@@ -11,7 +11,7 @@
 //   5 - Dry Forest
 //
 // Classifier: Random Forest (500 trees)
-// Feature space: 22 spectral and temporal features
+// Feature space: 26 spectral and temporal features
 //
 // Authors: [Brayan Soto Quispe, Fernando Alarcon Yllaconse,
 //           Ulises Francisco Giraldo Malca, Pablito Marcelo López Serrano]
@@ -210,7 +210,7 @@ var compositeBase = ee.Image(
 );
 
 // ============================================================
-// SECTION 7: SPECTRAL INDICES (14 indices)
+// SECTION 7: SPECTRAL INDICES (11 indices)
 //
 // All indices use native TM band designations:
 //   Blue  = SR_B1 | Green = SR_B2 | Red   = SR_B3
@@ -315,7 +315,7 @@ var RATIO_RS = compositeBase.select('SR_B3')
 
 
 // ============================================================
-// SECTION 8: INTRA-ANNUAL TEMPORAL METRICS (8 features)
+// SECTION 8: INTRA-ANNUAL TEMPORAL METRICS (9 features)
 //
 // Computed from individual scenes before compositing.
 // With a 16-day revisit cycle, ~22 potential scenes exist per
@@ -359,8 +359,8 @@ var FREQ_AGUA = mndwiCol
   .mean().clip(studyArea).rename('FREQ_AGUA');
 
 // ============================================================
-// SECTION 9: FULL FEATURE STACK (22 features)
-// 6 TM spectral bands + 8 static indices + 8 temporal metrics
+// SECTION 9: FULL FEATURE STACK (26 features)
+// 6 TM spectral bands + 11 static indices + 9 temporal metrics
 //
 // Band count matches Epoch 3 (L8/9) stack exactly, ensuring
 // a methodologically consistent feature space across all epochs
@@ -387,7 +387,7 @@ var ALL_BANDS = [
   'FREQ_AGUA'
 ];
 
-print('Total features (expected: 22):', ALL_BANDS.length);
+print('Total features (expected: 26):', ALL_BANDS.length);
 print('Feature stack bands:', ALL_BANDS);
 
 
@@ -501,7 +501,7 @@ print('▶ Class distribution — test: ', testSet.aggregate_histogram('TC'));
 //   minLeafPopulation = 5 prevents overfitting on small classes
 //                         (Gislason et al. 2006, Pattern Recognit. Lett.)
 //   bagFraction = 0.7     standard for land cover mapping
-//   variablesPerSplit = 5 ≈ sqrt(22 features); Breiman (2001)
+//   variablesPerSplit = 5 ≈ sqrt(26 features); Breiman (2001)
 //   seed = 123            fixed for full reproducibility (Epoch 1 L5)
 // ============================================================
 var rfClassifier = ee.Classifier.smileRandomForest({
