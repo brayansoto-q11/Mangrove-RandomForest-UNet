@@ -11,7 +11,7 @@
 //   5 - Dry Forest
 //
 // Classifier: Random Forest (500 trees)
-// Feature space: 22 spectral and temporal features
+// Feature space: 26 spectral and temporal features
 //
 // Authors: [Brayan Soto Quispe, Fernando Alarcon Yllaconse,
 //           Ulises Francisco Giraldo Malca, Pablito Marcelo López Serrano]
@@ -225,7 +225,7 @@ var compositeBase = ee.Image(
 
 
 // ============================================================
-// SECTION 6: SPECTRAL INDICES (14 indices)
+// SECTION 6: SPECTRAL INDICES (11 indices)
 //
 // Identical formulas to Epoch 3 (L8/9) — band renaming in
 // Section 2 ensures full compatibility across epochs.
@@ -311,7 +311,7 @@ var RATIO_RS = compositeBase.select('SR_B4')
 
 
 // ============================================================
-// SECTION 7: INTRA-ANNUAL TEMPORAL METRICS (8 features)
+// SECTION 7: INTRA-ANNUAL TEMPORAL METRICS (9 features)
 //
 // Temporal metrics are computed from individual scene-level
 // images before compositing, which increases robustness
@@ -393,8 +393,8 @@ var FREQ_AGUA_f = FREQ_AGUA.updateMask(sufficientObs).unmask(0.20);
 
 
 // ============================================================
-// SECTION 9: FULL FEATURE STACK (22 features)
-// 6 spectral bands + 8 static indices + 8 temporal metrics
+// SECTION 9: FULL FEATURE STACK (26 features)
+// 6 spectral bands + 11 static indices + 9 temporal metrics
 // ============================================================
 var features = compositeBase.select(BANDS_ALIAS)
   .addBands(NDVI).addBands(EVI).addBands(SAVI)
@@ -418,7 +418,7 @@ var ALL_BANDS = [
   'FREQ_AGUA'
 ];
 
-print('Total features (expected: 22):', ALL_BANDS.length);
+print('Total features (expected: 26):', ALL_BANDS.length);
 print('Feature stack bands:', ALL_BANDS);
 
 // ============================================================
@@ -526,7 +526,7 @@ print('▶ Class distribution — test: ', testSet.aggregate_histogram('TC'));
 //   minLeafPopulation = 5 prevents overfitting on small classes
 //                         (Gislason et al. 2006, Pattern Recognit. Lett.)
 //   bagFraction = 0.7     standard for land cover mapping
-//   variablesPerSplit = 5 ≈ sqrt(22 features); Breiman (2001)
+//   variablesPerSplit = 5 ≈ sqrt(26 features); Breiman (2001)
 //   seed = 789            fixed for full reproducibility
 // ============================================================
 var rfClassifier = ee.Classifier.smileRandomForest({
