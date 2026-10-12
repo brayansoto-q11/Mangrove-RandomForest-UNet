@@ -11,7 +11,7 @@
 //   5 - Dry Forest
 //
 // Classifier: Random Forest (500 trees)
-// Feature space: 22 spectral and temporal features
+// Feature space: 26 spectral and temporal features
 //
 // Authors: [Brayan Soto Quispe, Fernando Alarcon Yllaconse,
 //           Ulises Francisco Giraldo Malca, Pablito Marcelo López Serrano]
@@ -98,7 +98,7 @@ print('Available scenes for ' + YEAR + ':', col.size());
 var composite = col.median().clip(studyArea);
 
 // ============================================================
-// SECTION 6: SPECTRAL INDICES (14 indices)
+// SECTION 6: SPECTRAL INDICES (11 indices)
 //
 // Index selection rationale per target class:
 // ─────────────────────────────────────────────────────────────
@@ -178,7 +178,7 @@ var RATIO_RS = composite.select('SR_B4')
 
 
 // ============================================================
-// SECTION 7: INTRA-ANNUAL TEMPORAL METRICS (8 features)
+// SECTION 7: INTRA-ANNUAL TEMPORAL METRICS (9 features)
 //
 //   Mangrove:      stable high NDVI year-round (evergreen)
 //   Water Bodies:  stable high MNDWI year-round (permanent)
@@ -213,8 +213,8 @@ var FREQ_AGUA = mndwiCol
   .mean().clip(studyArea).rename('FREQ_AGUA');
 
 // ============================================================
-// SECTION 8: FULL FEATURE STACK (22 features)
-// 6 spectral bands + 8 static indices + 8 temporal metrics
+// SECTION 8: FULL FEATURE STACK (26 features)
+// 6 spectral bands + 11 static indices + 9 temporal metrics
 // ============================================================
 var features = composite.select(BANDS)
   .addBands(NDVI).addBands(EVI).addBands(SAVI)
@@ -228,7 +228,7 @@ var features = composite.select(BANDS)
   .addBands(FREQ_AGUA);
 
 var ALL_BANDS = features.bandNames();
-print('Total features (expected: 22):', ALL_BANDS.size());
+print('Total features (expected: 26):', ALL_BANDS.size());
 print('Feature stack bands:', ALL_BANDS);
 
 
@@ -349,7 +349,7 @@ print('▶ Class distribution — test: ', testSet.aggregate_histogram('TC'));
 //   minLeafPopulation = 5 prevents overfitting on small classes
 //                         (Gislason et al. 2006, Pattern Recognit. Lett.)
 //   bagFraction = 0.7     standard for land cover mapping
-//   variablesPerSplit = 5 ≈ sqrt(22 features); Breiman (2001)
+//   variablesPerSplit = 5 ≈ sqrt(26 features); Breiman (2001)
 //   seed = 456            fixed for full reproducibility
 // ============================================================
 var rfClassifier = ee.Classifier.smileRandomForest({
